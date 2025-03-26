@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BiteCheck Nutrition API</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+
+    <h1>Nutrition Information</h1>
+    
+    <label for="ingredient">Enter Ingredient:</label>
+    <input type="text" id="ingredient" placeholder="e.g., Sugar">
+    <button onclick="fetchNutrition()">Fetch Nutrition</button>
+
+    <h2>Result:</h2>
+    <pre id="result"></pre>
+
+    <script>
+        async function fetchNutrition() {
+            var ingredient = document.getElementById("ingredient").value;
+            var resultDiv = document.getElementById("result");
+
+            if (!ingredient) {
+                alert("Please enter an ingredient!");
+                return;
+            }
+
+            // Show loading message
+            resultDiv.innerHTML = "Fetching data...";
+
+            // API URL
+            var url = "http://127.0.0.1:5001/get_nutrition/" + encodeURIComponent(ingredient);
+
+            try {
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error(`Error ${response.status}: Ingredient not found or API issue!`);
+                }
+
+                const data = await response.json();
+
+                if (data.status === "success") {
+                    resultDiv.innerHTML = `<pre>${JSON.stringify(data, null, 4)}</pre>`;
+                } else {
+                    throw new Error("Invalid ingredient or missing data!");
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<span style="color:red;">Error: ${error.message}</span>`;
+                console.error(error);
+            }
+        }
+    </script>
+
+</body>
+</html>
